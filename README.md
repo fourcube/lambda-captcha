@@ -4,7 +4,7 @@ Generates captchas that can be verified decentrally.
 
 ## Description
 
-This is heavily inspired by [svg-captcha](https://github.com/lemonce/svg-captcha/), but written in TypeScript. It also allows you to pass the generate captcha expressions together with the captcha SVG,
+This is heavily inspired by [svg-captcha](https://github.com/lemonce/svg-captcha/), but written in TypeScript. It also allows you to pass the generated captcha expressions together with the captcha SVG,
 so you can verify the results independently. The captcha expressions are encrypted, so they are not
 machine readable.
 
@@ -45,3 +45,11 @@ function verify(encryptedCaptchaExpression, captchaSolution) {
   return captchaResult // either true on success or false if the solution was wrong
 }
 ```
+
+## Testing
+
+`npm run test`
+
+or 
+
+`npm run tdd`
