@@ -7,9 +7,9 @@ import { encrypt, decrypt, keyToBuffer } from './crypto'
 
 export type ILambdaCaptcha = {
   /**
-   * An unencrypted string representation of the captcha
+   * An unencrypted representation of the captcha
    */
-  expr: string
+  expr: any
   /**
    * An unencrypted string representation of the captcha
    */
@@ -18,6 +18,11 @@ export type ILambdaCaptcha = {
    * Captcha SVG
    */
   captchaSvg: string
+  
+  /**
+   * Unix timestamp when the captcha expires (UTC)
+   */
+  validUntil: number
 }
 
 export function create(config: ILambdaCaptchaConfig): ILambdaCaptcha {
@@ -31,27 +36,39 @@ export function create(config: ILambdaCaptchaConfig): ILambdaCaptcha {
       throw new Error(`unknown captcha mode ${config.mode}`)
   }
 
-  const expressionJson = expression.toJSON()
+  // TODO: Generate timestamp
+  
+  const validUntil = 0
+  const validationInfo = JSON.stringify({ expression: expression.toObject(), validUntil })
   
   return {
-    expr: expressionJson,
-    encryptedExpr: encrypt(expressionJson, config.cryptoKey),
-    captchaSvg: renderExpression(expression, config)
+    expr: expression,
+    encryptedExpr: encrypt(validationInfo, config.cryptoKey),
+    captchaSvg: renderExpression(expression, config),
+    validUntil
   }
 }
 
 export function verify(
-  encryptedExpression: string,
+  validationInfo: string,
   solution: any,
   key: string
 ) {
   try {
-    const expressionJson = decrypt(encryptedExpression, keyToBuffer(key))
-    const o = JSON.parse(expressionJson)
+    const json = decrypt(validationInfo, keyToBuffer(key))
+    const { expression: o, validUntil } = JSON.parse(json)
     
+        
     switch (o.type) {
       case 'math':
         const expression = LambdaCaptchaMathExpression.fromJSON(o)
+        
+        const currentTimestamp = Math.floor(Date.now() / 1000)
+        if (validUntil < currentTimestamp) {
+          console.log('got', validUntil, 'which is <', currentTimestamp)
+          return false
+        }
+        
         return expression.solve() == solution
       default:
         throw new Error(`unknown captcha type ${o.type}`)
