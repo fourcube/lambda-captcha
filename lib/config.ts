@@ -35,6 +35,10 @@ export type ILambdaCaptchaConfig = {
      * Amount of noise 
      */
     noise?: number
+    /**
+     * Captcha should be valid until `Date.now() + captchaDuration`
+     */
+    captchaDuration: number
 }
 
 export class LambdaCaptchaConfigManager {
@@ -46,7 +50,8 @@ export class LambdaCaptchaConfigManager {
       width: 150,
       height: 75,
       noise: 5,
-      cryptoKey: keyToBuffer(cryptoKey)
+      cryptoKey: keyToBuffer(cryptoKey),
+      captchaDuration: 180 * 1000
     }
   }
 }

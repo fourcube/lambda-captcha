@@ -40,7 +40,7 @@ describe("LambdaCaptchaMathExpression", () => {
   describe("fromJSON", () => {
     it("converts JSON back to a math expression", () => {
       const expression = new LambdaCaptchaMathExpression([5, 8, 11], ["+", "-"]);
-      const rebuilt = LambdaCaptchaMathExpression.fromJSON(JSON.parse(expression.toJSON()))
+      const rebuilt = LambdaCaptchaMathExpression.fromJSON(JSON.parse(JSON.stringify(expression.toObject())))
       
       expect(rebuilt).toBeInstanceOf(LambdaCaptchaMathExpression)
       expect(rebuilt.operators).toStrictEqual(expression.operators)

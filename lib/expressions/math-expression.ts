@@ -75,11 +75,11 @@ export class LambdaCaptchaMathExpression implements ILambdaCaptchaExpression {
     return elements.join("");
   }
   
-  public toJSON() {
-    return JSON.stringify({
+  public toObject() {
+    return {
       type: 'math',
       operands: this.operands,
       operators: this.operators
-    })
+    }
   }
 }
