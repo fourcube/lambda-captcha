@@ -16,6 +16,10 @@ export type ILambdaCaptchaConfig = {
      */
     cryptoKey: Buffer
     /**
+     * Key to sign the encrypted message
+     */
+    signatureKey: Buffer
+    /**
      * SVG width
      */
     width: number,
@@ -42,7 +46,7 @@ export type ILambdaCaptchaConfig = {
 }
 
 export class LambdaCaptchaConfigManager {
-  static default(cryptoKey: string): ILambdaCaptchaConfig {
+  static default(cryptoKey: string, signatureKey: string): ILambdaCaptchaConfig {
     return {
       fontPath: resolve(__dirname, '../fonts', 'FiraCode-Bold.otf'),
       fontSize: 40,
@@ -51,6 +55,7 @@ export class LambdaCaptchaConfigManager {
       height: 75,
       noise: 5,
       cryptoKey: keyToBuffer(cryptoKey),
+      signatureKey: keyToBuffer(signatureKey),
       captchaDuration: 180 * 1000
     }
   }

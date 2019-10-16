@@ -3,7 +3,7 @@ import { ILambdaCaptchaExpression } from "./expressions/types";
 import { renderText } from "./font";
 import { LambdaCaptchaMathExpression } from "./expressions/math-expression";
 import * as random from "./random";
-import { encrypt, decrypt, keyToBuffer } from "./crypto";
+import { encrypt, decrypt, keyToBuffer, verifySignature, encryptAndSign } from "./crypto";
 import * as errors from "./errors";
 
 export type ILambdaCaptcha = {
@@ -45,7 +45,7 @@ export function create(config: ILambdaCaptchaConfig): ILambdaCaptcha {
 
   return {
     expr: jsonToEncrypt,
-    encryptedExpr: encrypt(jsonToEncrypt, config.cryptoKey),
+    encryptedExpr: encryptAndSign(jsonToEncrypt, config.cryptoKey, config.signatureKey),
     captchaSvg: renderCaptcha(captcha, config),
     validUntil: timestamp
   };
@@ -54,11 +54,18 @@ export function create(config: ILambdaCaptchaConfig): ILambdaCaptcha {
 export function verify(
   encryptedExpression: string,
   solution: any,
-  key: string
+  key: string,
+  signatureKey: string,
 ) {
   let captcha: ILambdaCaptchaExpression & { type: string }, validUntil: number;
   try {
-    const decrypted = decrypt(encryptedExpression, keyToBuffer(key));
+    const message = verifySignature(encryptedExpression, keyToBuffer(signatureKey))
+    // 1. Verify signature
+    if (!message) {
+      return errors.INVALID_DATA
+    }
+    
+    const decrypted = decrypt(message, keyToBuffer(key));
     const parsed = JSON.parse(decrypted);
 
     captcha = parsed.captcha;

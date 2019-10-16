@@ -1,6 +1,12 @@
 // https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb
 
-import { randomBytes, createCipheriv, createDecipheriv, createHash } from "crypto";
+import {
+  randomBytes,
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  createHmac
+} from "crypto";
 import { assert } from "console";
 
 const IV_LENGTH = 16; // For AES, this is always 16
@@ -16,8 +22,8 @@ export function encrypt(text: string, key: Buffer) {
 }
 
 export function decrypt(text: string, key: Buffer) {
-  assert(text, 'text argument is required')
-  
+  assert(text, "text argument is required");
+
   let textParts = text.split(":");
   if (textParts.length < 2) {
     throw new Error("invalid ciphertext (missing iv?)");
@@ -33,6 +39,39 @@ export function decrypt(text: string, key: Buffer) {
   return decrypted.toString();
 }
 
+export function encryptAndSign(
+  data: string,
+  key: Buffer,
+  signatureKey: Buffer
+) {
+  const encrypted = encrypt(data, key);
+
+  const cipher = createHmac("sha256", signatureKey);
+  cipher.update(encrypted);
+
+  return cipher.digest("hex") + "$" + encrypted;
+}
+
+export function verifySignature(data: string, signatureKey: Buffer) {
+  try {
+    const [signature, message] = data.split("$");
+
+    const cipher = createHmac("sha256", signatureKey);
+    cipher.update(message);
+    
+    if (signature === cipher.digest('hex')) {
+      return message
+    }
+    
+  } catch (e) {
+    return false;
+  }
+  
+  return false
+}
+
 export function keyToBuffer(cryptoKey: string) {
-  return createHash('sha256').update(String(cryptoKey)).digest()
+  return createHash("sha256")
+    .update(String(cryptoKey))
+    .digest();
 }
