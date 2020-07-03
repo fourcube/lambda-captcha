@@ -28,7 +28,7 @@ describe("verify", () => {
   const signatureKey = "c0ffee";
 
   it("returns false when the captcha has expired", () => {
-    const result = verify(encryptedCaptchaExpression, 7, secret, signatureKey);
+    const result = verify(encryptedCaptchaExpression, '7', secret, signatureKey);
 
     expect(result).toBe(errors.CAPTCHA_EXPIRED);
   });
@@ -44,7 +44,7 @@ describe("verify", () => {
 
     const result = verify(
       captcha.encryptedExpr,
-      solution,
+      solution.toString(),
       "deadbeef",
       signatureKey
     );
@@ -57,7 +57,7 @@ describe("verify", () => {
     config.captchaDuration = 10 * 1000;
 
     const captcha = create(config);
-    const result = verify(captcha.encryptedExpr, 999, "deadbeef", signatureKey);
+    const result = verify(captcha.encryptedExpr, '999', "deadbeef", signatureKey);
 
     expect(result).toBe(errors.INVALID_SOLUTION);
   });
