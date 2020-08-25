@@ -10,7 +10,7 @@ export type ILambdaCaptchaConfig = {
     /**
      * Mode of the captcha
      */
-    mode: 'math',
+    mode: 'math' | 'code',
     /**
      * Key to encrypt the generated expression
      */
@@ -43,6 +43,10 @@ export type ILambdaCaptchaConfig = {
      * Captcha should be valid until `Date.now() + captchaDuration`
      */
     captchaDuration: number
+    /**
+     * Length of generated code in 'code' mode
+     */
+    codeLength?: number
 }
 
 export class LambdaCaptchaConfigManager {
