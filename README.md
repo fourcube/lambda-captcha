@@ -41,7 +41,7 @@ const lambdaCaptcha = require('lambda-captcha')
 const SECRET = process.env.CAPTCHA_SECRET
 
 function verify(encryptedCaptchaExpression, captchaSolution) {
-  const captchaResult = captcha.verify(captchaExpression, captchaSolution, SECRET)
+  const captchaResult = lambdaCaptcha.verify(captchaExpression, captchaSolution, SECRET)
   return captchaResult // either true on success or false if the solution was wrong
 }
 ```
