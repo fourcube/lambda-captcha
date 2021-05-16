@@ -25,7 +25,7 @@ function generateCaptcha() {
     captchaSvg: captcha.captchaSvg,
     
     // This is the un-encrypted expression of the captcha.
-    captchaExpression: captcha.expr
+    captchaExpression: captcha.expr,
     
     // This is the encrypted expression of the captcha.
     // Pass it along with your server side verification requests.
